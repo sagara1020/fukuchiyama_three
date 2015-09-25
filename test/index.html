@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>QGIS2leaf webmap</title>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+		<link rel="stylesheet" type="text/css" href="css/own_style.css">
+		<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+		<script src="js/leaflet-hash.js"></script>
+		<script src="js/Autolinker.min.js"></script>
+	</head>
+	<body>
+		<div id="map"></div>
+		<script src="data/exp_refuge.js"></script>
+		<script src="data/exp_hospital.js"></script>
+		<script src="data/exp_welfarefacility.js"></script>
+		<script src="data/exp_childrenfacility.js"></script>
+		<script src="data/exp_policeoffice.js"></script>
+		<script src="data/exp_publicfacility.js"></script>
+		<script src="data/exp_school.js"></script>
+		<script src="data/exp_firestation.js"></script>
+		<script src="data/exp_fukuchiyamacity.js"></script>
+		<script src="data/exp_floodedarea.js"></script>
+		<script>
+		var map = L.map('map', {
+			zoomControl:true, maxZoom:19
+		}).fitBounds([[35.2708110095,135.060715168],[35.4233675385,135.250395719]]);
+		var hash = new L.Hash(map);
+		var additional_attrib = 'created w. <a href="https://github.com/geolicious/qgis2leaf" target ="_blank">qgis2leaf</a> by <a href="http://www.geolicious.de" target ="_blank">Geolicious</a> & contributors<br>';
+		var feature_group = new L.featureGroup([]);
+		var raster_group = new L.LayerGroup([]);
+		var basemap_0 = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+			attribution: additional_attrib + '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
+		});	
+		basemap_0.addTo(map);	
+		var layerOrder=new Array();
+		function pop_floodedarea(feature, layer) {					
+			var popupContent = '<table><tr><th scope="row">Name</th><td>' + Autolinker.link(String(feature.properties['Name'])) + '</td></tr></table>';
+			layer.bindPopup(popupContent);
+		}
+
+		function doStylefloodedarea(feature) {
+			switch (feature.properties.Name) {
+				case 'yukashita':
+					return {
+						weight: '1.3',
+						fillColor: '#29dad4',
+						color: '#728584',
+						weight: '1',
+						dashArray: '',
+						opacity: '1.0',
+						fillOpacity: '1.0',
+					};
+					break;
+				case 'yukaue':
+					return {
+						weight: '1.3',
+						fillColor: '#1111b4',
+						color: '#728584',
+						weight: '1',
+						dashArray: '',
+						opacity: '1.0',
+						fillOpacity: '1.0',
+					};
+					break;
+			}
+		}
+		var exp_floodedareaJSON = new L.geoJson(exp_floodedarea,{
+			onEachFeature: pop_floodedarea,
+			style: doStylefloodedarea
+		});
+		//add comment sign to hide this layer on the map in the initial view.
+		feature_group.addLayer(exp_floodedareaJSON);
+		function pop_fukuchiyamacity(feature, layer) {					
+			var popupContent = '<table><tr><th scope="row">N03_001</th><td>' + Autolinker.link(String(feature.properties['N03_001'])) + '</td></tr><tr><th scope="row">N03_002</th><td>' + Autolinker.link(String(feature.properties['N03_002'])) + '</td></tr><tr><th scope="row">N03_003</th><td>' + Autolinker.link(String(feature.properties['N03_003'])) + '</td></tr><tr><th scope="row">N03_004</th><td>' + Autolinker.link(String(feature.properties['N03_004'])) + '</td></tr><tr><th scope="row">N03_007</th><td>' + Autolinker.link(String(feature.properties['N03_007'])) + '</td></tr></table>';
+			layer.bindPopup(popupContent);
+		}
+
+		function doStylefukuchiyamacity(feature) {
+				return {
+					weight: 6.3,
+					color: '#ffff57',
+					dashArray: '',
+					opacity: 1.0,
+					fillOpacity: 1.0
+				};
+		}
+		var exp_fukuchiyamacityJSON = new L.geoJson(exp_fukuchiyamacity,{
+			onEachFeature: pop_fukuchiyamacity,
+			style: doStylefukuchiyamacity
+		});
+		layerOrder[layerOrder.length] = exp_fukuchiyamacityJSON;
+		for (index = 0; index < layerOrder.length; index++) {
+			feature_group.removeLayer(layerOrder[index]);feature_group.addLayer(layerOrder[index]);
+		}
+		//add comment sign to hide this layer on the map in the initial view.
+		feature_group.addLayer(exp_fukuchiyamacityJSON);
+		function pop_firestation(feature, layer) {					
+			var popupContent = '<table><tr><th scope="row">P17_001</th><td>' + Autolinker.link(String(feature.properties['P17_001'])) + '</td></tr><tr><th scope="row">P17_004</th><td>' + Autolinker.link(String(feature.properties['P17_004'])) + '</td></tr></table>';
+			layer.bindPopup(popupContent);
+		}
+
+		var exp_firestationJSON = new L.geoJson(exp_firestation,{
+			onEachFeature: pop_firestation,
+			pointToLayer: function (feature, latlng) {  
+				return L.circleMarker(latlng, {
+					radius: 4.0,
+					fillColor: '#ff7f00',
+					color: '#000000',
+					weight: 1,
+					opacity: 1.0,
+					fillOpacity: 1.0
+				})
+			}
+		});
+		//add comment sign to hide this layer on the map in the initial view.
+		feature_group.addLayer(exp_firestationJSON);
+		function pop_school(feature, layer) {					
+			var popupContent = '<table><tr><th scope="row">P29_005</th><td>' + Autolinker.link(String(feature.properties['P29_005'])) + '</td></tr><tr><th scope="row">P29_006</th><td>' + Autolinker.link(String(feature.properties['P29_006'])) + '</td></tr></table>';
+			layer.bindPopup(popupContent);
+		}
+
+		var exp_schoolJSON = new L.geoJson(exp_school,{
+			onEachFeature: pop_school,
+			pointToLayer: function (feature, latlng) {  
+				return L.circleMarker(latlng, {
+					radius: 4.0,
+					fillColor: '#3a1809',
+					color: '#000000',
+					weight: 1,
+					opacity: 1.0,
+					fillOpacity: 1.0
+				})
+			}
+		});
+		//add comment sign to hide this layer on the map in the initial view.
+		feature_group.addLayer(exp_schoolJSON);
+		function pop_publicfacility(feature, layer) {					
+			var popupContent = '<table><tr><th scope="row">P02_004</th><td>' + Autolinker.link(String(feature.properties['P02_004'])) + '</td></tr><tr><th scope="row">P02_005</th><td>' + Autolinker.link(String(feature.properties['P02_005'])) + '</td></tr><tr><th scope="row">P02_006</th><td>' + Autolinker.link(String(feature.properties['P02_006'])) + '</td></tr></table>';
+			layer.bindPopup(popupContent);
+		}
+
+		var exp_publicfacilityJSON = new L.geoJson(exp_publicfacility,{
+			onEachFeature: pop_publicfacility,
+			pointToLayer: function (feature, latlng) {  
+				return L.circleMarker(latlng, {
+					radius: 4.0,
+					fillColor: '#8fff63',
+					color: '#000000',
+					weight: 1,
+					opacity: 1.0,
+					fillOpacity: 1.0
+				})
+			}
+		});
+		//add comment sign to hide this layer on the map in the initial view.
+		feature_group.addLayer(exp_publicfacilityJSON);
+		function pop_policeoffice(feature, layer) {					
+			var popupContent = '<table><tr><th scope="row">P18_001</th><td>' + Autolinker.link(String(feature.properties['P18_001'])) + '</td></tr><tr><th scope="row">P18_002</th><td>' + Autolinker.link(String(feature.properties['P18_002'])) + '</td></tr><tr><th scope="row">P18_003</th><td>' + Autolinker.link(String(feature.properties['P18_003'])) + '</td></tr><tr><th scope="row">P18_004</th><td>' + Autolinker.link(String(feature.properties['P18_004'])) + '</td></tr></table>';
+			layer.bindPopup(popupContent);
+		}
+
+		var exp_policeofficeJSON = new L.geoJson(exp_policeoffice,{
+			onEachFeature: pop_policeoffice,
+			pointToLayer: function (feature, latlng) {  
+				return L.circleMarker(latlng, {
+					radius: 4.0,
+					fillColor: '#763e02',
+					color: '#000000',
+					weight: 1,
+					opacity: 1.0,
+					fillOpacity: 1.0
+				})
+			}
+		});
+		//add comment sign to hide this layer on the map in the initial view.
+		feature_group.addLayer(exp_policeofficeJSON);
+		function pop_childrenfacility(feature, layer) {					
+			var popupContent = '<table><tr><th scope="row">P02_004</th><td>' + Autolinker.link(String(feature.properties['P02_004'])) + '</td></tr><tr><th scope="row">P02_005</th><td>' + Autolinker.link(String(feature.properties['P02_005'])) + '</td></tr></table>';
+			layer.bindPopup(popupContent);
+		}
+
+		var exp_childrenfacilityJSON = new L.geoJson(exp_childrenfacility,{
+			onEachFeature: pop_childrenfacility,
+			pointToLayer: function (feature, latlng) {  
+				return L.circleMarker(latlng, {
+					radius: 4.0,
+					fillColor: '#33a02c',
+					color: '#000000',
+					weight: 1,
+					opacity: 1.0,
+					fillOpacity: 1.0
+				})
+			}
+		});
+		//add comment sign to hide this layer on the map in the initial view.
+		feature_group.addLayer(exp_childrenfacilityJSON);
+		function pop_welfarefacility(feature, layer) {					
+			var popupContent = '<table><tr><th scope="row">P14_003</th><td>' + Autolinker.link(String(feature.properties['P14_003'])) + '</td></tr><tr><th scope="row">P14_007</th><td>' + Autolinker.link(String(feature.properties['P14_007'])) + '</td></tr><tr><th scope="row">P14_008</th><td>' + Autolinker.link(String(feature.properties['P14_008'])) + '</td></tr></table>';
+			layer.bindPopup(popupContent);
+		}
+
+		var exp_welfarefacilityJSON = new L.geoJson(exp_welfarefacility,{
+			onEachFeature: pop_welfarefacility,
+			pointToLayer: function (feature, latlng) {  
+				return L.circleMarker(latlng, {
+					radius: 4.0,
+					fillColor: '#9c17fb',
+					color: '#000000',
+					weight: 1,
+					opacity: 1.0,
+					fillOpacity: 1.0
+				})
+			}
+		});
+		//add comment sign to hide this layer on the map in the initial view.
+		feature_group.addLayer(exp_welfarefacilityJSON);
+		function pop_hospital(feature, layer) {					
+			var popupContent = '<table><tr><th scope="row">P04_001</th><td>' + Autolinker.link(String(feature.properties['P04_001'])) + '</td></tr><tr><th scope="row">P04_002</th><td>' + Autolinker.link(String(feature.properties['P04_002'])) + '</td></tr><tr><th scope="row">P04_003</th><td>' + Autolinker.link(String(feature.properties['P04_003'])) + '</td></tr><tr><th scope="row">P04_004</th><td>' + Autolinker.link(String(feature.properties['P04_004'])) + '</td></tr><tr><th scope="row">P04_007</th><td>' + Autolinker.link(String(feature.properties['P04_007'])) + '</td></tr></table>';
+			layer.bindPopup(popupContent);
+		}
+
+		var exp_hospitalJSON = new L.geoJson(exp_hospital,{
+			onEachFeature: pop_hospital,
+			pointToLayer: function (feature, latlng) {  
+				return L.circleMarker(latlng, {
+					radius: 4.0,
+					fillColor: '#f9c6fc',
+					color: '#000000',
+					weight: 1,
+					opacity: 1.0,
+					fillOpacity: 1.0
+				})
+			}
+		});
+		//add comment sign to hide this layer on the map in the initial view.
+		feature_group.addLayer(exp_hospitalJSON);
+		function pop_refuge(feature, layer) {					
+			var popupContent = '<table><tr><th scope="row">P20_002</th><td>' + Autolinker.link(String(feature.properties['P20_002'])) + '</td></tr><tr><th scope="row">P20_003</th><td>' + Autolinker.link(String(feature.properties['P20_003'])) + '</td></tr><tr><th scope="row">P20_004</th><td>' + Autolinker.link(String(feature.properties['P20_004'])) + '</td></tr><tr><th scope="row">P20_005</th><td>' + Autolinker.link(String(feature.properties['P20_005'])) + '</td></tr><tr><th scope="row">level</th><td>' + Autolinker.link(String(feature.properties['level'])) + '</td></tr></table>';
+			layer.bindPopup(popupContent);
+		}
+
+		var exp_refugeJSON = new L.geoJson(exp_refuge,{
+			onEachFeature: pop_refuge,
+			pointToLayer: function (feature, latlng) {  
+				return L.circleMarker(latlng, {
+					radius: 4.0,
+					fillColor: '#e31a1c',
+					color: '#000000',
+					weight: 1,
+					opacity: 1.0,
+					fillOpacity: 1.0
+				})
+			}
+		});
+		//add comment sign to hide this layer on the map in the initial view.
+		feature_group.addLayer(exp_refugeJSON);
+
+		feature_group.addTo(map);
+		var title = new L.Control();
+		title.onAdd = function (map) {
+			this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+			this.update();
+			return this._div;
+		};
+		title.update = function () {
+			this._div.innerHTML = '<h2>disastermap in fukuchiyama city</h2>floodmap'
+		};
+		title.addTo(map);
+	var baseMaps = {
+		'OSM Standard': basemap_0
+	};
+		L.control.layers(baseMaps,{"refuge": exp_refugeJSON,"hospital": exp_hospitalJSON,"welfarefacility": exp_welfarefacilityJSON,"childrenfacility": exp_childrenfacilityJSON,"policeoffice": exp_policeofficeJSON,"publicfacility": exp_publicfacilityJSON,"school": exp_schoolJSON,"firestation": exp_firestationJSON,"fukuchiyamacity": exp_fukuchiyamacityJSON,"floodedarea": exp_floodedareaJSON},{collapsed:false}).addTo(map);
+		L.control.scale({options: {position: 'bottomleft',maxWidth: 100,metric: true,imperial: false,updateWhenIdle: false}}).addTo(map);
+	</script>
+</body>
+</html>
